@@ -1,0 +1,26 @@
+---
+- name: Apache-httpd installation with a deployment
+  hosts: all
+  remote_user: ec2-user
+  become: yes
+  tasks:
+
+  - name: Ping to servers
+    ansible.builtin.ping:
+
+  - name: Install the latest version of Apache
+    ansible.builtin.yum:
+     name: httpd
+     state: latest
+
+  - name: Start service httpd
+    ansible.builtin.service:
+     name: httpd
+     state: started
+
+  - name: Copy file from local to apache deployment path
+    ansible.builtin.copy:
+     src: /home/ec2-user/index.html
+     dest: /var/www/html/index.html
+     mode: '777'
+...

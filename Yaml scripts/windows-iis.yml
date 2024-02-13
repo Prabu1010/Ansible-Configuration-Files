@@ -1,0 +1,22 @@
+---
+- name: Install IIS 
+  hosts: windows
+  gather_facts: false
+  tasks:
+
+  - name: Ping to servers
+    ansible.windows.win_ping:
+
+  - name: Installing IIS Web server
+    ansible.windows.win_feature:
+     name: Web-Server
+     state: present
+     restart: yes
+     include_sub_features: yes
+     include_management_tools: yes
+
+  - name: Copy a single file
+    ansible.windows.win_copy:
+     src: /home/ec2-user/index.html
+     dest: C:\\inetpub\\wwwroot\\index.html
+...

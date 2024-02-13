@@ -1,0 +1,11 @@
+---
+- hosts: all 
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Ping to linux servers
+    ansible.builtin.ping:
+    
+  - name: Ping to windows servers
+    ansible.windows.win_ping:
+...
