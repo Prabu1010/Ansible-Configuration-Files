@@ -1,0 +1,19 @@
+---
+- name: when condition yaml file 
+  hosts: all 
+  remote_user: ec2-user
+  become: yes
+  tasks: 
+
+  - name: Update server packages
+    ansible.builtin.yum:
+     name: "*"
+     state: latest
+    when: ansible_os_family == 'debian'
+
+  - name: install java
+    ansible.builtin.yum: 
+     name: java
+     state: latest
+
+...

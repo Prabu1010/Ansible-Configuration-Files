@@ -1,0 +1,16 @@
+---
+- name: Install packages with loop condition
+  hosts: all
+  remote_user: ec2-user
+  become: yes 
+  tasks:
+
+  - name: Install multiple packages
+    ansible.builtin.yum:
+     name: "{{item}}"
+     state: latest
+    loop:
+      - git
+      - php
+      - unzip
+...

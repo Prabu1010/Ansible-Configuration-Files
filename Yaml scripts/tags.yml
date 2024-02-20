@@ -1,0 +1,29 @@
+---
+- name: Perform tasks with tag condition
+  hosts: all
+  remote_user: ec2-user
+  become: yes
+  tasks:
+
+  - name: Update the servers
+    ansible.builtin.yum:
+     name: "*"
+     state: latest
+    tags:
+     - update
+
+  - name: Install java
+    ansible.builtin.yum:
+     name: java
+     state: latest
+    tags:
+     - java 
+
+  - name: Install git
+    ansible.builtin.yum:
+     name: git
+     state: latest
+    tags:
+     - git 
+
+...

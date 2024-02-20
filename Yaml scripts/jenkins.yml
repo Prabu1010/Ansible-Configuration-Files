@@ -1,0 +1,50 @@
+---
+- name: Install Jenkins
+  hosts: jenkins
+  remote_user: ec2-user
+  become: yes 
+  tasks:
+
+  - name: Upgrade all packages
+    ansible.builtin.yum:
+      name: '*'
+      state: latest
+
+  - name: Download Jenkins repo
+    ansible.builtin.get_url:
+      url: https://pkg.jenkins.io/redhat-stable/jenkins.repo 
+      dest: /etc/yum.repos.d/jenkins.repo
+      
+  - name: Import Jenkins key from a url
+    ansible.builtin.rpm_key:
+      state: present
+      key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+  - name: Install java
+    ansible.builtin.yum:
+      name: java
+      state: latest  
+
+  - name: Install Jenkins
+    ansible.builtin.yum:
+      name: jenkins
+      state: latest   
+
+  - name: Jenkins Daemon reload
+    ansible.builtin.systemd_service:
+      daemon_reload: true
+
+  - name: Jenkins service  enable and start
+    ansible.builtin.systemd_service:
+      name: jenkins
+      enabled: true 
+      state: started
+
+  - name: Copy password to register
+    ansible.builtin.shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+    register: myecho
+
+  - name: Show Initial Password 
+    ansible.builtin.debug: msg=" password {{myecho.stdout}}"
+
+...

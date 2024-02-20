@@ -1,0 +1,56 @@
+---
+- name: Install Tomcat web server with a sample war deployment(port changed)
+  hosts: all
+  remote_user: ec2-user
+  become: yes 
+  tasks:
+
+  - name: Upgrade all packages
+    ansible.builtin.yum:
+      name: '*'
+      state: latest
+  
+  - name: Install Java
+    ansible.builtin.yum:
+      name: java
+      state: latest
+
+  - name: Download Tomcat as tar file
+    ansible.builtin.get_url:
+      url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz
+      dest: /opt
+      mode: '777'
+
+  - name: Unarchive tar file that is already on the remote machine
+    ansible.builtin.unarchive:
+      src: /opt/apache-tomcat-9.0.85.tar.gz
+      dest: /opt/
+      remote_src: yes
+
+  - name: Remove tar file (delete file)
+    ansible.builtin.file:
+      path: /opt/apache-tomcat-9.0.85.tar.gz
+      state: absent
+
+  - name: Execute the command in remote shell to start Tomcat
+    ansible.builtin.shell: nohup /opt/apache-tomcat-9.0.85/bin/startup.sh &
+
+  - name: Template server.xml file to server
+    ansible.builtin.template:
+      src: //home/ec2-user/server.xml.j2
+      dest: //opt/apache-tomcat-9.0.85/conf/server.xml
+      mode: '777'
+  
+  - name: Deploy sample.war
+    ansible.builtin.get_url:
+      url: https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war
+      dest: /opt/apache-tomcat-9.0.85/webapps/sample.war
+      mode: '777'
+
+  - name: Execute the command in remote shell to stop Tomcat
+    ansible.builtin.shell: nohup /opt/apache-tomcat-9.0.85/bin/shutdown.sh &
+
+  - name: Execute the command in remote shell to start Tomcat
+    ansible.builtin.shell: nohup /opt/apache-tomcat-9.0.85/bin/startup.sh &
+    
+...
